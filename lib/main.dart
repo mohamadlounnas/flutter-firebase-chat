@@ -32,14 +32,44 @@ class RootWidget extends StatelessWidget {
     return MaterialApp(
       navigatorKey: navigatorKey,
       title: 'Flutter firebase chat',
-      
       theme: ThemeData(
-      appBarTheme: AppBarTheme(
-        textTheme: Theme.of(context).textTheme,
-        backgroundColor: Theme.of(context).cardColor,
-        iconTheme: IconThemeData(color: Theme.of(context).textTheme.bodyText1!.color),
-      ),
-        primarySwatch: Colors.blue,
+        appBarTheme: AppBarTheme(
+          textTheme: Theme.of(context).textTheme,
+          backgroundColor: Theme.of(context).cardColor,
+          iconTheme: IconThemeData(
+              color: Theme.of(context).textTheme.bodyText1!.color),
+        ),
+        primarySwatch: Theme.of(context).brightness == Brightness.light
+            ? const MaterialColor(
+                0xFF000000,
+                <int, Color>{
+                  50: Color(0xFF000000),
+                  100: Color(0xFF000000),
+                  200: Color(0xFF000000),
+                  300: Color(0xFF000000),
+                  400: Color(0xFF000000),
+                  500: Color(0xFF000000),
+                  600: Color(0xFF000000),
+                  700: Color(0xFF000000),
+                  800: Color(0xFF000000),
+                  900: Color(0xFF000000),
+                },
+              )
+            :const MaterialColor(
+                0xFFFFFFFF,
+                <int, Color>{
+                  50: Color(0xFFFFFFFF),
+                  100: Color(0xFFFFFFFF),
+                  200: Color(0xFFFFFFFF),
+                  300: Color(0xFFFFFFFF),
+                  400: Color(0xFFFFFFFF),
+                  500: Color(0xFFFFFFFF),
+                  600: Color(0xFFFFFFFF),
+                  700: Color(0xFFFFFFFF),
+                  800: Color(0xFFFFFFFF),
+                  900: Color(0xFFFFFFFF),
+                },
+              ),
       ),
       home: const MainView(),
     );
@@ -54,27 +84,29 @@ class MainView extends StatefulWidget {
   _MainViewState createState() => _MainViewState();
 }
 
-  Future<void> _FCMBackgroundHandler(RemoteMessage message) async {
-    RemoteNotification? notification = message.notification;
-    AndroidNotification? android = message.notification?.android;
+Future<void> _FCMBackgroundHandler(RemoteMessage message) async {
+  RemoteNotification? notification = message.notification;
+  AndroidNotification? android = message.notification?.android;
 
-    if (notification != null && android != null) {
-      var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-        android.channelId ?? "channelId",
-        'channel name',
-        channelDescription: 'channel description',
-        importance: Importance.max,
-        color: Colors.yellow,
-        priority: Priority.high,
-        ticker: 'ticker',
-      );
-      var platformChannelSpecifics =
-          NotificationDetails(android: androidPlatformChannelSpecifics);
-      await flutterLocalNotificationsPlugin.show(
-          0, notification.title, notification.body, platformChannelSpecifics,
-          payload: jsonEncode(message.data));
-    }
-  }  var flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  if (notification != null && android != null) {
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      android.channelId ?? "channelId",
+      'channel name',
+      channelDescription: 'channel description',
+      importance: Importance.max,
+      color: Colors.yellow,
+      priority: Priority.high,
+      ticker: 'ticker',
+    );
+    var platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+        0, notification.title, notification.body, platformChannelSpecifics,
+        payload: jsonEncode(message.data));
+  }
+}
+
+var flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
 class _MainViewState extends State<MainView> {
   @override
@@ -105,26 +137,19 @@ class _MainViewState extends State<MainView> {
           builder: (BuildContext ctx) => RoomView(room: room, profile: profile),
         ),
       );
-      //  await Navigator.pushAndRemoveUntil<void>(
-      //   navigatorKey.currentState!.context,
-      //   MaterialPageRoute<void>(
-      //       builder: (BuildContext ctx) =>
-      //           RoomView.fromUid(data["from_uid"])),
-      //   ModalRoute.withName('/'),
-      // );
     }
   }
 
-
   void _initApp() async {
-     FirebaseMessaging.onMessage.listen(_FCMBackgroundHandler);
-     FirebaseMessaging.onMessageOpenedApp.listen(_FCMBackgroundHandler);
-    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    FirebaseMessaging.onMessage.listen(_FCMBackgroundHandler);
+    FirebaseMessaging.onMessageOpenedApp.listen(_FCMBackgroundHandler);
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
       sound: true,
     );
-     FirebaseMessaging.onBackgroundMessage(_FCMBackgroundHandler);
+    FirebaseMessaging.onBackgroundMessage(_FCMBackgroundHandler);
 
     var initializationSettingsAndroid =
         const AndroidInitializationSettings('mipmap/ic_launcher');

@@ -29,8 +29,15 @@ class _SignupViewState extends State<SignupView> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const FlutterLogo(
-              size: 100,
+
+            const ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                Colors.grey,
+                BlendMode.saturation,
+              ),
+              child:  FlutterLogo(
+                size: 100,
+              ),
             ),
             const SizedBox(
               height: 50,

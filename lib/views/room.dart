@@ -44,7 +44,7 @@ class RoomView extends StatelessWidget {
               CircleAvatar(
                 backgroundImage: NetworkImage(profile.photo),
               ),
-              if (profile.FCMToken != null)
+              if (profile.FCMToken != "")
                 Positioned(
                   bottom: 0,
                   left: 0,
@@ -63,7 +63,7 @@ class RoomView extends StatelessWidget {
             style: const TextStyle(color: Colors.black),
           ),
           subtitle: Text(
-            profile.FCMToken != null ? "Connected" : "Disconnected",
+            profile.FCMToken != "" ? "Connected" : "Disconnected",
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(color: Colors.black87),
           ),
@@ -221,8 +221,8 @@ class RoomView extends StatelessWidget {
       print(value);
     });
     // Fapi.instance.sendNotificationTo(profile.uid);
-    if (profile.FCMToken != null) {
-      Fapi.instance.notifications.send(NotificationMessage(to: profile.FCMToken!, title: Fapi.instance.profile!.name,body: text));
+    if (profile.FCMToken != "") {
+      Fapi.instance.notifications.send(NotificationMessage(to: profile.FCMToken, title: Fapi.instance.profile!.name,body: text));
     }
   }
 

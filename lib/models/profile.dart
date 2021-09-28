@@ -6,13 +6,13 @@ class Profile {
   final String name;
   final String photo;
   final String uid;
-  final String? FCMToken;
+  final String FCMToken;
 
   Profile({
     required this.name,
     required this.photo,
     required this.uid,
-    this.FCMToken,
+     this.FCMToken = "",
   });
 
 

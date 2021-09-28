@@ -19,10 +19,8 @@ class _SigninViewState extends State<SigninView> {
     super.initState();
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) async {
       if (Fapi.instance.isUser) {
+        loading = true;
         await Fapi.instance.LoadProfile();
-        FirebaseMessaging.instance.onTokenRefresh.listen((token) {
-          Fapi.instance.FCMToken = token;
-        });
         Navigator.pushReplacement(
           context,
           MaterialPageRoute<void>(
@@ -30,14 +28,6 @@ class _SigninViewState extends State<SigninView> {
           ),
         );
       }
-      // else {
-      //   Navigator.pushReplacement(
-      //     context,
-      //     MaterialPageRoute<void>(
-      //       builder: (BuildContext context) => const SigninView(),
-      //     ),
-      //   );
-      // }
     });
   }
 
@@ -55,8 +45,14 @@ class _SigninViewState extends State<SigninView> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const FlutterLogo(
-              size: 100,
+            const ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                Colors.grey,
+                BlendMode.saturation,
+              ),
+              child:  FlutterLogo(
+                size: 100,
+              ),
             ),
             const SizedBox(
               height: 50,

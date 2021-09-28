@@ -31,22 +31,23 @@ class RMessage {
 class Fapi {
   var showAttention = ValueNotifier(true);
   String? FCMPayload;
-  String? _FCMToken;
+  String _FCMToken = "";
 
-  String? get FCMToken => _FCMToken;
+  String get FCMToken => _FCMToken;
 
-  set FCMToken(String? FCMToken) {
+  set FCMToken(String FCMToken) {
     _FCMToken = FCMToken;
     updateFCMToken();
   }
 
   updateFCMToken() async {
+    try {
     var collection = await FirebaseFirestore.instance
         .collection("profiles")
-        .where("uid", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-        .get();
-    if (collection.docs.isNotEmpty) {
-      collection.docs.first.reference.update({"FCMToken": FCMToken});
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .update({"FCMToken": FCMToken});
+    } catch (e) {
+      // i dont expect that
     }
   }
 
@@ -64,7 +65,6 @@ class Fapi {
       "AAAAvjOKsVY:APA91bHsWIfHJ54LrLQjnOM3x8gFCHnyakxxMqOylkLQTKs5z02e-PBLRlNU1QzYvRJcaBD1VG2Jfh1kAIc9PKc3mjg30Sznk1UjLS7e3VMd9SwaM6fMSSx5qUhoI_500ZHOQCnn_jSv";
   Notifications notifications = Notifications();
 
-
   Profile? profile;
   LoadProfile() async {
     if (Fapi.instance.profile == null) {
@@ -72,15 +72,22 @@ class Fapi {
           .collection("profiles")
           .doc(FirebaseAuth.instance.currentUser!.uid)
           .get();
-          
+
       profile = Profile.fromMap(_profile.data() as Map<String, dynamic>);
 
-      if (profile!.FCMToken == null) {
-        FirebaseMessaging.instance.getToken().then((token) async {
-          profile = profile!.copyWith(FCMToken: token);
-        });
+      if (profile!.FCMToken == "") {
+        var _fcmToken = await FirebaseMessaging.instance.getToken();
+        FirebaseFirestore.instance
+            .collection("profiles")
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .update({"FCMToken": _fcmToken});
+        profile = profile!.copyWith(FCMToken: _fcmToken);
       }
     }
+
+    FirebaseMessaging.instance.onTokenRefresh.listen((token) {
+      Fapi.instance.FCMToken = token;
+    });
   }
 
   Future<RMessage> signup(
@@ -95,9 +102,14 @@ class Fapi {
         email: email,
         password: password,
       )
-          .then((user) {
+          .then((user) async {
+        var _fcmToken = await FirebaseMessaging.instance.getToken();
         updateProfile(
-            profile: Profile(uid: user.user!.uid, name: name, photo: photo));
+            profile: Profile(
+                uid: user.user!.uid,
+                name: name,
+                photo: photo,
+                FCMToken: _fcmToken ?? ""));
         return user;
       });
       rMessage.done = true;
@@ -112,7 +124,7 @@ class Fapi {
   Future<RMessage> signout() async {
     var rMessage = RMessage();
     try {
-      Fapi.instance.FCMToken = null;
+      Fapi.instance.FCMToken = "";
       await FirebaseAuth.instance.signOut();
       rMessage.done = true;
     } catch (e) {

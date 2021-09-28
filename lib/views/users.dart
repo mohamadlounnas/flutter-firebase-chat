@@ -23,7 +23,7 @@ class UsersView extends StatelessWidget {
               CircleAvatar(
                 backgroundImage: NetworkImage(Fapi.instance.profile!.photo),
               ),
-              if (Fapi.instance.profile!.FCMToken != null)
+              if (Fapi.instance.profile!.FCMToken != "")
                 Positioned(
                   bottom: 0,
                   left: 0,
@@ -42,7 +42,7 @@ class UsersView extends StatelessWidget {
             style: const TextStyle(color: Colors.black),
           ),
           subtitle: Text(
-            Fapi.instance.profile!.FCMToken != null
+            Fapi.instance.profile!.FCMToken != ""
                 ? "Connected"
                 : "Disconnected",
             overflow: TextOverflow.ellipsis,
@@ -57,8 +57,8 @@ class UsersView extends StatelessWidget {
                   context,
                   MaterialPageRoute<void>(
                     builder: (BuildContext context) => const SigninView(),
-                  ),ModalRoute.withName('/'),
-
+                  ),
+                  ModalRoute.withName('/'),
                 );
               },
               icon: const Icon(Icons.logout))
@@ -87,47 +87,48 @@ class UsersView extends StatelessWidget {
                   ),
                 ),
                 ValueListenableBuilder(
-                    valueListenable: Fapi.instance.showAttention,
-                    builder: (context, bool showAttentionValue, snapshot) {
-                      return !showAttentionValue
-                          ? const SizedBox()
-                          : Container(
-                              color: Colors.amber.withOpacity(0.3),
-                              child: Row(
-                                children: [
-                                  const Padding(
-                                    padding: EdgeInsets.only(left: 24),
-                                    child: Icon(
-                                      Icons.report_problem,
-                                      color: Colors.amber,
-                                    ),
+                  valueListenable: Fapi.instance.showAttention,
+                  builder: (context, bool showAttentionValue, snapshot) {
+                    return !showAttentionValue
+                        ? const SizedBox()
+                        : Container(
+                            color: Colors.amber.withOpacity(0.3),
+                            child: Row(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.only(left: 24),
+                                  child: Icon(
+                                    Icons.report_problem,
+                                    color: Colors.amber,
                                   ),
-                                  Flexible(
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 24, vertical: 12),
-                                      child: Text(
-                                        "This app is only for development propose, we do not recommended to use in personel or commercail cases.\ndeveloped by: @mohamadlounnas",
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodyText2!
-                                              .color!
-                                              .withOpacity(0.7),
-                                        ),
+                                ),
+                                Flexible(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 24, vertical: 12),
+                                    child: Text(
+                                      "This app is only for development propose, we do not recommended to use in personel or commercail cases.\ndeveloped by: @mohamadlounnas",
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyText2!
+                                            .color!
+                                            .withOpacity(0.7),
                                       ),
                                     ),
                                   ),
-                                  IconButton(
-                                      onPressed: () {
-                                        Fapi.instance.showAttention.value =
-                                            false;
-                                      },
-                                      icon: const Icon(Icons.close))
-                                ],
-                              ));
-                    }),
+                                ),
+                                IconButton(
+                                    onPressed: () {
+                                      Fapi.instance.showAttention.value = false;
+                                    },
+                                    icon: const Icon(Icons.close))
+                              ],
+                            ),
+                          );
+                  },
+                ),
                 ...snapshot.data!.docs.map((DocumentSnapshot document) {
                   Profile profile =
                       Profile.fromMap(document.data() as Map<String, dynamic>);
@@ -165,20 +166,20 @@ class UsersView extends StatelessWidget {
                               CircleAvatar(
                                 backgroundImage: NetworkImage(profile.photo),
                               ),
-                              
-              if (profile.FCMToken != null)
-                              Positioned(
-                                bottom: 0,
-                                left: 0,
-                                child: Container(
-                                  padding: EdgeInsets.all(4),
-                                  decoration: BoxDecoration(
-                                      color: Colors.green,
-                                      borderRadius: BorderRadius.circular(100),
-                                      border: Border.all(
-                                          width: 2, color: Colors.white)),
-                                ),
-                              )
+                              if (profile.FCMToken != "")
+                                Positioned(
+                                  bottom: 0,
+                                  left: 0,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                        color: Colors.green,
+                                        borderRadius:
+                                            BorderRadius.circular(100),
+                                        border: Border.all(
+                                            width: 2, color: Colors.white)),
+                                  ),
+                                )
                             ],
                           ),
                           title: Text(
